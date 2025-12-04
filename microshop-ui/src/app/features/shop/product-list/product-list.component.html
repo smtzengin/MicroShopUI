@@ -1,0 +1,211 @@
+<p-toast></p-toast>
+
+<div class="surface-ground px-4 py-5 md:px-6 lg:px-8">
+  <div class="grid">
+    <div class="col-12 md:col-3">
+      <div class="surface-card p-4 shadow-2 border-round">
+        <div class="text-900 font-bold text-xl mb-3">Filtrele</div>
+        <p-divider></p-divider>
+
+        <div class="mb-4">
+          <label class="block mb-2 font-medium">Ürün Ara</label>
+          <span class="p-input-icon-left w-full">
+            <i class="pi pi-search"></i>
+            <input
+              type="text"
+              pInputText
+              [(ngModel)]="searchText"
+              (keydown.enter)="onFilterChange()"
+              placeholder="Kelime girin..."
+              class="w-full"
+            />
+          </span>
+        </div>
+
+        <div class="mb-4">
+          <label class="block mb-2 font-medium">Kategori</label>
+          <div *ngFor="let cat of categories" class="field-checkbox mb-2">
+            <p-radioButton
+              name="category"
+              [value]="cat.id"
+              [(ngModel)]="selectedCategoryId"
+              (onClick)="onFilterChange()"
+              [inputId]="'cat' + cat.id"
+            ></p-radioButton>
+            <label [for]="'cat' + cat.id" class="ml-2 cursor-pointer">{{
+              cat.name
+            }}</label>
+          </div>
+          <div
+            *ngIf="selectedCategoryId"
+            class="mt-2 text-primary cursor-pointer text-sm"
+            (click)="selectedCategoryId = undefined; onFilterChange()"
+          >
+            <i class="pi pi-times"></i> Seçimi Kaldır
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="block mb-2 font-medium">Fiyat Aralığı</label>
+          <p-slider
+            [(ngModel)]="priceRange"
+            [range]="true"
+            [min]="0"
+            [max]="100000"
+            [step]="1000"
+            (onSlideEnd)="
+              minPriceFilter = priceRange[0];
+              maxPriceFilter = priceRange[1];
+              onFilterChange()
+            "
+          ></p-slider>
+          <div class="flex justify-content-between mt-2 text-sm text-600">
+            <span>{{
+              priceRange[0] | currency : "TRY" : "symbol-narrow"
+            }}</span>
+            <span>{{
+              priceRange[1] | currency : "TRY" : "symbol-narrow"
+            }}</span>
+          </div>
+        </div>
+
+        <p-button
+          label="Filtreleri Uygula"
+          styleClass="w-full mb-2"
+          (onClick)="onFilterChange()"
+        ></p-button>
+
+        <div class="flex align-items-center gap-2 mt-2">
+          <p-checkbox
+            [(ngModel)]="showAllProducts"
+            (onChange)="onFilterChange()"
+            inputId="showAll">
+          </p-checkbox>
+          <label for="showAll" class="text-sm cursor-pointer">Tüm Ürünleri Göster ({{ totalRecords }})</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 md:col-9">
+      <!-- DataView -->
+      <div *ngIf="useDataView">
+        <p-dataView [value]="products" [layout]="layout" [loading]="loading">
+        <ng-template pTemplate="header">
+          <div class="flex flex-column md:flex-row md:justify-content-between gap-2">
+            <span class="font-bold text-2xl">Ürünler ({{ products.length }}/{{ totalRecords }})</span>
+            <p-dataViewLayoutOptions></p-dataViewLayoutOptions>
+          </div>
+        </ng-template>
+
+        <ng-template let-product pTemplate="listItem">
+          <div class="col-12 mb-3">
+            <div class="flex flex-column xl:flex-row xl:align-items-start p-4 gap-4 surface-card border-1 surface-border border-round">
+              <img class="w-9 sm:w-16rem xl:w-10rem shadow-2 block xl:block mx-auto border-round"
+                   [src]="product.pictureUrl || 'https://via.placeholder.com/150'"
+                   [alt]="product.name"
+                   style="height: 150px; object-fit: cover" />
+              <div class="flex flex-column sm:flex-row justify-content-between align-items-center xl:align-items-start flex-1 gap-4">
+                <div class="flex flex-column align-items-center sm:align-items-start gap-3">
+                  <div class="text-2xl font-bold text-900">{{ product.name }}</div>
+                  <div class="flex align-items-center gap-3">
+                    <span class="flex align-items-center gap-2">
+                      <i class="pi pi-tag"></i>
+                      <span class="font-semibold">{{ product.categoryId }}</span>
+                    </span>
+                    <p-tag [value]="product.stockCount > 0 ? 'Stokta' : 'Tükendi'" [severity]="getSeverity(product)"></p-tag>
+                  </div>
+                </div>
+                <div class="flex sm:flex-column align-items-center sm:align-items-end gap-3 sm:gap-2">
+                  <span class="text-2xl font-semibold text-900">{{ product.price | currency : "TRY" : "symbol-narrow" }}</span>
+                  <p-button icon="pi pi-shopping-cart"
+                           styleClass="p-button-rounded"
+                           [disabled]="product.stockCount === 0"
+                           (onClick)="addToBasket(product)"></p-button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+
+        <ng-template let-product pTemplate="gridItem">
+          <div class="col-12 sm:col-6 lg:col-4 xl:col-4 p-2">
+            <div class="p-4 border-1 surface-border surface-card border-round flex flex-column h-full transition-all hover:shadow-4 cursor-pointer">
+              <div class="flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+                <span class="flex align-items-center gap-2">
+                  <i class="pi pi-tag"></i>
+                  <span class="font-semibold">{{ product.categoryId }}</span>
+                </span>
+                <p-tag [value]="product.stockCount > 0 ? 'Stokta' : 'Tükendi'" [severity]="getSeverity(product)"></p-tag>
+              </div>
+
+              <div class="flex flex-column align-items-center gap-3 py-5">
+                <img class="w-9 shadow-2 border-round"
+                     [src]="product.pictureUrl || 'https://via.placeholder.com/150'"
+                     [alt]="product.name"
+                     style="height: 150px; object-fit: cover" />
+                <div class="text-2xl font-bold text-900 text-center">{{ product.name }}</div>
+              </div>
+
+              <div class="flex align-items-center justify-content-between mt-auto">
+                <span class="text-2xl font-semibold text-900">{{ product.price | currency : "TRY" : "symbol-narrow" }}</span>
+                <p-button icon="pi pi-shopping-cart"
+                         styleClass="p-button-rounded"
+                         [disabled]="product.stockCount === 0"
+                         (onClick)="addToBasket(product)"></p-button>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+      </p-dataView>
+      </div>
+
+      <!-- Simple Grid Alternative -->
+      <div *ngIf="!useDataView">
+        <div class="flex flex-column md:flex-row md:justify-content-between gap-2 mb-4">
+          <span class="font-bold text-2xl">Ürünler ({{ products.length }}/{{ totalRecords }})</span>
+        </div>
+
+        <div class="grid">
+          <div *ngFor="let product of products; trackBy: trackByProductId"
+               class="col-12 sm:col-6 lg:col-4 xl:col-4 p-2">
+            <div class="p-4 border-1 surface-border surface-card border-round flex flex-column h-full transition-all hover:shadow-4 cursor-pointer"
+                 (click)="navigateToDetail(product)">
+              <div class="flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+                <span class="flex align-items-center gap-2">
+                  <i class="pi pi-tag"></i>
+                  <span class="font-semibold">{{ product.categoryId }}</span>
+                </span>
+                <p-tag [value]="(product.stockCount || 0) > 0 ? 'Stokta' : 'Tükendi'" [severity]="getSeverity(product)"></p-tag>
+              </div>
+
+              <div class="flex flex-column align-items-center gap-3 py-5">
+                <img class="w-9 shadow-2 border-round"
+                     [src]="product.pictureUrl || 'https://via.placeholder.com/150'"
+                     [alt]="product.name"
+                     style="height: 150px; object-fit: cover" />
+                <div class="text-2xl font-bold text-900 text-center">{{ product.name }}</div>
+              </div>
+
+              <div class="flex align-items-center justify-content-between mt-auto">
+                <span class="text-2xl font-semibold text-900">{{ product.price | currency : "TRY" : "symbol-narrow" }}</span>
+                <p-button icon="pi pi-shopping-cart"
+                         styleClass="p-button-rounded"
+                         [disabled]="(product.stockCount || 0) === 0"
+                         (onClick)="addToBasket(product); $event.stopPropagation()"></p-button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p-paginator
+        *ngIf="!showAllProducts"
+        [rows]="rows"
+        [totalRecords]="totalRecords"
+        [first]="first"
+        (onPageChange)="onPageChange($event)"
+        [rowsPerPageOptions]="[9, 18, 36, 54]"
+      ></p-paginator>
+    </div>
+  </div>
+</div>

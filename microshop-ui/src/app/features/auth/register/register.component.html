@@ -1,0 +1,55 @@
+<div class="flex min-h-screen">
+
+    <div class="hidden md:flex md:col-6 lg:col-7 bg-no-repeat bg-cover relative"
+         style="background-image: url('https://images.unsplash.com/photo-1472851294608-4155f2118599?q=80&w=1000&auto=format&fit=crop');">
+        <div class="absolute top-0 left-0 w-full h-full bg-black-alpha-50 flex align-items-center justify-content-center">
+            <div class="text-white text-center px-5">
+                <h1 class="text-5xl font-bold mb-3">Aramıza Katılın</h1>
+                <p class="text-xl">Hesabınızı oluşturun ve alışverişe başlayın.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 md:col-6 lg:col-5 flex flex-column justify-content-center surface-ground relative">
+
+        <div class="absolute top-0 left-0 m-4">
+            <p-button label="Mağazaya Dön" icon="pi pi-arrow-left" [text]="true" routerLink="/shop" severity="secondary"></p-button>
+        </div>
+
+        <div class="flex align-items-center justify-content-center flex-grow-1">
+            <div class="surface-card p-6 shadow-2 border-round w-full lg:w-30rem">
+
+                <div class="text-center mb-5">
+                    <div class="text-900 text-3xl font-medium mb-3">Kayıt Ol</div>
+                    <span class="text-600 font-medium line-height-3">Zaten hesabın var mı?</span>
+                    <a routerLink="/auth/login" class="font-medium no-underline ml-2 text-primary cursor-pointer">Giriş Yap</a>
+                </div>
+
+                <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="flex flex-column gap-3">
+
+                    <div>
+                        <label class="block text-900 font-medium mb-2">Ad Soyad</label>
+                        <input pInputText formControlName="fullName" class="w-full" placeholder="Adınız Soyadınız">
+                    </div>
+
+                    <div>
+                        <label class="block text-900 font-medium mb-2">Kullanıcı Adı</label>
+                        <input pInputText formControlName="userName" class="w-full" placeholder="kullaniciadi">
+                    </div>
+
+                    <div>
+                        <label class="block text-900 font-medium mb-2">E-Posta</label>
+                        <input pInputText formControlName="email" class="w-full" placeholder="Email adresiniz">
+                    </div>
+
+                    <div>
+                        <label class="block text-900 font-medium mb-2">Şifre</label>
+                        <p-password formControlName="password" [toggleMask]="true" styleClass="w-full" inputStyleClass="w-full" placeholder="••••••••"></p-password>
+                    </div>
+
+                    <p-button label="Hesap Oluştur" type="submit" [loading]="loading" styleClass="w-full mt-2"></p-button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,57 @@
+footer {
+  // Custom styles for modern footer design
+
+  .space-y-2 > * + * {
+    margin-top: 0.5rem;
+  }
+
+  // Newsletter input focus styles
+  input:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(var(--primary-color), 0.2);
+  }
+
+  // Payment method cards hover effect
+  .bg-gray-800:hover {
+    background-color: #374151 !important;
+    transform: scale(1.05);
+    transition: all 0.2s ease;
+  }
+
+  // Social media icons hover animation
+  a {
+    text-decoration: none;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+    }
+  }
+
+  // Enhanced grid responsiveness for mobile
+  @media (max-width: 768px) {
+    .grid > div {
+      margin-bottom: 2rem;
+    }
+
+    .flex-row {
+      flex-direction: column !important;
+      gap: 1rem;
+    }
+  }
+
+  // Gradient background for brand icon
+  .bg-gradient-to-r {
+    background: linear-gradient(to right, var(--primary-color), var(--primary-600, var(--primary-color)));
+  }
+
+  // Newsletter button animation
+  button {
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+  }
+}

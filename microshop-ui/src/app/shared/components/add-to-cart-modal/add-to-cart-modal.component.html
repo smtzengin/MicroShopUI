@@ -1,0 +1,113 @@
+<p-dialog
+  [visible]="visible"
+  [modal]="true"
+  [closable]="false"
+  [draggable]="false"
+  [resizable]="false"
+  styleClass="add-to-cart-modal"
+  [style]="{width: '500px', maxWidth: '90vw'}"
+>
+  <!-- Modal Header -->
+  <ng-template pTemplate="header">
+    <div class="flex align-items-center gap-3">
+      <div class="bg-green-100 border-round-full p-2">
+        <i class="pi pi-check text-green-600 text-xl"></i>
+      </div>
+      <div>
+        <h3 class="text-xl font-semibold text-900 m-0">Sepete Eklendi!</h3>
+        <p class="text-sm text-600 m-0 mt-1">Ürün başarıyla sepetinize eklendi</p>
+      </div>
+    </div>
+  </ng-template>
+
+  <!-- Modal Content -->
+  <div class="pt-4" *ngIf="productData">
+
+    <!-- Added Product Info -->
+    <div class="border-1 border-200 border-round-lg p-4 mb-4 bg-gray-50">
+      <div class="flex align-items-center gap-4">
+        <!-- Product Image -->
+        <div class="flex-shrink-0">
+          <img
+            [src]="productData.productImage || 'https://via.placeholder.com/80x80?text=Product'"
+            [alt]="productData.productName"
+            class="w-5rem h-5rem object-fit-cover border-round-md border-1 border-200"
+          />
+        </div>
+
+        <!-- Product Details -->
+        <div class="flex-1">
+          <h4 class="font-semibold text-900 m-0 mb-2 line-height-3">
+            {{ productData.productName }}
+          </h4>
+          <div class="flex align-items-center justify-content-between">
+            <span class="text-2xl font-bold text-primary">
+              {{ productData.productPrice | currency: 'TRY':'symbol':'1.2-2':'tr' }}
+            </span>
+            <div class="flex align-items-center gap-2 bg-white border-round-md px-3 py-1 border-1 border-200">
+              <span class="text-sm text-600">Miktar:</span>
+              <p-badge
+                [value]="productData.addedQuantity"
+                styleClass="bg-primary text-white"
+              ></p-badge>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cart Summary -->
+    <div class="bg-primary-50 border-round-lg p-4 mb-4" *ngIf="basketSummary$ | async as summary">
+      <div class="flex align-items-center justify-content-between">
+        <div class="flex align-items-center gap-3">
+          <i class="pi pi-shopping-cart text-primary text-xl"></i>
+          <div>
+            <div class="font-semibold text-900">Sepetinizde</div>
+            <div class="text-sm text-600">{{ summary.totalItems }} ürün</div>
+          </div>
+        </div>
+        <div class="text-right">
+          <div class="text-sm text-600">Toplam</div>
+          <div class="text-xl font-bold text-primary">
+            {{ summary.totalPrice | currency: 'TRY':'symbol':'1.2-2':'tr' }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex gap-3">
+      <button
+        pButton
+        type="button"
+        label="Alışverişe Devam Et"
+        class="flex-1 p-button-outlined p-button-secondary"
+        icon="pi pi-arrow-left"
+        (click)="onContinueShopping()"
+      ></button>
+
+      <button
+        pButton
+        type="button"
+        label="Sepete Git"
+        class="flex-1 p-button p-button-primary"
+        icon="pi pi-shopping-cart"
+        iconPos="right"
+        (click)="onGoToCart()"
+      ></button>
+    </div>
+
+  </div>
+
+  <!-- Close Button -->
+  <ng-template pTemplate="headeractions">
+    <button
+      pButton
+      type="button"
+      icon="pi pi-times"
+      class="p-button-rounded p-button-text p-button-sm"
+      (click)="closeModal()"
+    ></button>
+  </ng-template>
+
+</p-dialog>

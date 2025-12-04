@@ -1,0 +1,209 @@
+<div class="container mx-auto px-4 py-6 max-w-6xl">
+
+  <!-- Page Header -->
+  <div class="flex align-items-center justify-content-between mb-6">
+    <div>
+      <h1 class="text-3xl font-bold text-900 m-0">Sepetim</h1>
+      <p class="text-600 m-0 mt-2" *ngIf="basketSummary$ | async as summary">
+        {{ summary.totalItems }} ürün
+      </p>
+    </div>
+    <button
+      pButton
+      type="button"
+      label="Alışverişe Devam Et"
+      class="p-button-outlined"
+      icon="pi pi-arrow-left"
+      routerLink="/shop">
+    </button>
+  </div>
+
+  <!-- Basket Content -->
+  <div class="grid">
+
+    <!-- Basket Items -->
+    <div class="col-12 lg:col-8">
+
+      <!-- Empty Basket -->
+      <ng-container *ngIf="basketItems$ | async as items">
+        <div *ngIf="items.length === 0" class="text-center py-8">
+          <div class="bg-gray-50 border-round-lg p-6">
+            <i class="pi pi-shopping-cart text-6xl text-400 mb-4"></i>
+            <h3 class="text-xl font-semibold text-600 mb-3">Sepetiniz Boş</h3>
+            <p class="text-500 mb-4">Henüz sepetinize ürün eklemediniz.</p>
+            <button
+              pButton
+              type="button"
+              label="Alışveriş Yap"
+              class="p-button-primary"
+              icon="pi pi-shopping-bag"
+              routerLink="/shop">
+            </button>
+          </div>
+        </div>
+
+        <!-- Basket Items List -->
+        <div *ngIf="items.length > 0" class="space-y-4">
+
+          <!-- Clear All Button -->
+          <div class="flex justify-content-end mb-4">
+            <button
+              pButton
+              type="button"
+              label="Sepeti Boşalt"
+              class="p-button-outlined p-button-danger p-button-sm"
+              icon="pi pi-trash"
+              (click)="clearBasket()">
+            </button>
+          </div>
+
+          <!-- Item Card -->
+          <p-card
+            *ngFor="let item of items; trackBy: trackByItemId"
+            styleClass="mb-3 basket-item-card"
+          >
+            <div class="flex align-items-center gap-4 p-3">
+
+              <!-- Product Image -->
+              <div class="flex-shrink-0">
+                <img
+                  [src]="item.imageUrl || 'https://via.placeholder.com/120x120?text=Product'"
+                  [alt]="item.name"
+                  class="w-7rem h-7rem object-fit-cover border-round-lg border-1 border-200"
+                />
+              </div>
+
+              <!-- Product Info -->
+              <div class="flex-1">
+                <h4 class="font-semibold text-900 m-0 mb-2 line-height-3">
+                  {{ item.name }}
+                </h4>
+                <div class="text-2xl font-bold text-primary mb-3">
+                  {{ item.price | currency: 'TRY':'symbol':'1.2-2':'tr' }}
+                </div>
+
+                <!-- Quantity Control -->
+                <div class="flex align-items-center gap-3">
+                  <span class="text-sm text-600">Miktar:</span>
+                  <p-inputNumber
+                    [ngModel]="item.quantity"
+                    (ngModelChange)="updateQuantity(item.id, $event)"
+                    [min]="1"
+                    [max]="99"
+                    [showButtons]="true"
+                    buttonLayout="horizontal"
+                    size="small"
+                    styleClass="w-8rem"
+                    decrementButtonClass="p-button-outlined p-button-sm"
+                    incrementButtonClass="p-button-outlined p-button-sm"
+                  ></p-inputNumber>
+
+                  <!-- Item Total -->
+                  <div class="ml-4">
+                    <span class="text-sm text-600">Toplam:</span>
+                    <div class="text-lg font-bold text-900">
+                      {{ (item.price * item.quantity) | currency: 'TRY':'symbol':'1.2-2':'tr' }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Remove Button -->
+              <div class="flex-shrink-0">
+                <button
+                  pButton
+                  type="button"
+                  icon="pi pi-trash"
+                  class="p-button-rounded p-button-outlined p-button-danger p-button-sm"
+                  pTooltip="Sepetten Kaldır"
+                  (click)="removeItem(item.id)">
+                </button>
+              </div>
+
+            </div>
+          </p-card>
+
+        </div>
+      </ng-container>
+
+    </div>
+
+    <!-- Order Summary -->
+    <div class="col-12 lg:col-4">
+      <div class="sticky top-0">
+        <p-card
+          header="Sipariş Özeti"
+          styleClass="order-summary-card"
+          *ngIf="basketSummary$ | async as summary"
+        >
+
+          <div class="space-y-3">
+
+            <!-- Items Count -->
+            <div class="flex justify-content-between align-items-center">
+              <span class="text-600">Ürün Adedi:</span>
+              <span class="font-semibold">{{ summary.totalItems }}</span>
+            </div>
+
+            <!-- Subtotal -->
+            <div class="flex justify-content-between align-items-center">
+              <span class="text-600">Ara Toplam:</span>
+              <span class="font-semibold">{{ summary.totalPrice | currency: 'TRY':'symbol':'1.2-2':'tr' }}</span>
+            </div>
+
+            <!-- Shipping -->
+            <div class="flex justify-content-between align-items-center">
+              <span class="text-600">Kargo:</span>
+              <span class="font-semibold text-green-600">Ücretsiz</span>
+            </div>
+
+            <p-divider></p-divider>
+
+            <!-- Total -->
+            <div class="flex justify-content-between align-items-center">
+              <span class="text-lg font-semibold text-900">Toplam:</span>
+              <span class="text-2xl font-bold text-primary">
+                {{ summary.totalPrice | currency: 'TRY':'symbol':'1.2-2':'tr' }}
+              </span>
+            </div>
+
+          </div>
+
+          <!-- Checkout Button -->
+          <ng-template pTemplate="footer">
+            <button
+              pButton
+              type="button"
+              label="Ödeme Yap"
+              class="w-full p-button-lg"
+              icon="pi pi-credit-card"
+              [disabled]="summary.totalItems === 0"
+              (click)="proceedToCheckout()">
+            </button>
+          </ng-template>
+
+        </p-card>
+
+        <!-- Security Info -->
+        <div class="mt-4 p-3 bg-green-50 border-round-lg">
+          <div class="flex align-items-center gap-2 mb-2">
+            <i class="pi pi-shield text-green-600"></i>
+            <span class="font-semibold text-green-800">Güvenli Alışveriş</span>
+          </div>
+          <p class="text-sm text-green-700 m-0">
+            256-bit SSL sertifikası ile korumalı ödeme işlemi
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- Confirmation Dialogs -->
+<p-confirmDialog></p-confirmDialog>
+
+<!-- Toast Messages -->
+<p-toast></p-toast>

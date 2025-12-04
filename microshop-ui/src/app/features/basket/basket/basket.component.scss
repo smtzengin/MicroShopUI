@@ -1,0 +1,106 @@
+.space-y-4 > * + * {
+  margin-top: 1rem;
+}
+
+.space-y-3 > * + * {
+  margin-top: 0.75rem;
+}
+
+::ng-deep .basket-item-card {
+  .p-card-body {
+    padding: 0;
+  }
+
+  .p-card-content {
+    padding: 0;
+  }
+
+  &:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+    transition: all 0.3s ease;
+  }
+}
+
+::ng-deep .order-summary-card {
+  .p-card-header {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-600, var(--primary-color)));
+    color: white;
+    border-radius: 8px 8px 0 0;
+    padding: 1.5rem;
+  }
+
+  .p-card-body {
+    padding: 1.5rem;
+  }
+
+  .p-card-footer {
+    padding: 0 1.5rem 1.5rem 1.5rem;
+    background: transparent;
+    border-top: none;
+  }
+}
+
+// Product image hover effect
+img {
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+// Quantity input styling
+::ng-deep .p-inputnumber {
+  .p-inputnumber-input {
+    text-align: center;
+    font-weight: 600;
+  }
+
+  .p-button {
+    width: 2rem;
+    height: 2rem;
+  }
+}
+
+// Empty basket animation
+.pi-shopping-cart {
+  animation: emptyBasketPulse 3s ease-in-out infinite;
+}
+
+@keyframes emptyBasketPulse {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+// Security badge styling
+.bg-green-50 {
+  background-color: #f0f9ff;
+  border: 1px solid #bbf7d0;
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .basket-item-card .flex {
+    flex-direction: column;
+    gap: 1rem;
+
+    .flex-shrink-0:first-child {
+      align-self: center;
+    }
+  }
+
+  ::ng-deep .order-summary-card {
+    margin-top: 2rem;
+  }
+}

@@ -1,1 +1,53 @@
-/* You can add global styles to this file, and also import other style files */
+/* 1. PrimeNG Teması (ZORUNLU) */
+@import "primeng/resources/themes/lara-light-blue/theme.css";
+
+/* 2. PrimeNG Temel Stiller (ZORUNLU) */
+@import "primeng/resources/primeng.min.css";
+
+/* 3. İkonlar */
+@import "primeicons/primeicons.css";
+
+/* 4. PrimeFlex (Grid Sistemi - Layout için şart) */
+@import "primeflex/primeflex.css";
+
+/* 5. Global Reset ve Font Ayarları */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: var(--font-family); /* PrimeNG fontunu kullan */
+    background-color: var(--surface-ground); /* Hafif gri modern zemin */
+    color: var(--text-color);
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Linkler */
+a {
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+}
+
+/* Kart Düzeni Düzeltmeleri */
+.p-card {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+    border-radius: 12px !important;
+}
+
+/* Input ve Butonların kenarlarını yumuşat */
+.p-inputtext, .p-button {
+    border-radius: 8px !important;
+}
+/* DataView Grid Düzeltmesi */
+.p-dataview .p-dataview-content {
+    display: flex;
+    flex-wrap: wrap; /* Yan yana gelip aşağı kaymasını sağlar */
+    margin-right: -0.5rem;
+    margin-left: -0.5rem;
+    margin-top: -0.5rem;
+}
+
+/* Eğer Liste görünümüne geçersek flex olmamalı, block olmalı */
+.p-dataview.p-dataview-list .p-dataview-content {
+    display: block;
+}

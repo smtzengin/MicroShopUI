@@ -1,0 +1,14 @@
+:host {
+    display: block;
+}
+
+/* Kartın içindeki başlık boşluğunu ayarlayalım */
+::ng-deep .p-card-content {
+    padding-top: 0 !important;
+}
+
+/* Yüzen etiketlerin (float label) arka planını beyaz yapalım ki çizgi üstüne binmesin */
+::ng-deep .p-float-label label {
+    background-color: var(--surface-card);
+    padding: 0 5px;
+}

@@ -1,0 +1,95 @@
+<p-toast position="top-right"></p-toast>
+
+<div class="surface-ground px-4 py-8 md:px-6 lg:px-8" *ngIf="product">
+
+    <div class="mb-4">
+        <p-button icon="pi pi-arrow-left" label="Mağazaya Dön" [text]="true" routerLink="/shop"></p-button>
+    </div>
+
+    <div class="grid grid-nogutter surface-card shadow-2 border-round p-4">
+
+        <div class="col-12 md:col-6 lg:col-5 flex align-items-center justify-content-center mb-5 md:mb-0">
+            <p-image [src]="product.pictureUrl || 'https://via.placeholder.com/400x400'"
+                     [alt]="product.name || 'Ürün Resmi'"
+                     [preview]="true" width="100%"
+                     imageClass="border-round w-full shadow-2"
+                     [style]="{'max-height': '500px', 'object-fit': 'contain'}">
+            </p-image>
+        </div>
+
+        <div class="col-12 md:col-6 lg:col-7 md:pl-6">
+
+            <div class="flex justify-content-between align-items-center mb-3">
+                <span class="text-500 font-medium text-lg">{{ product.category?.name }}</span>
+                <p-tag [value]="getStockStatus(product.stockCount || 0)"
+                       [severity]="getSeverity(product.stockCount || 0)"
+                       styleClass="text-base px-3 py-1"></p-tag>
+            </div>
+
+            <div class="text-900 font-bold text-4xl mb-3">{{ product.name || 'Ürün Adı' }}</div>
+
+            <div class="flex align-items-center mb-4">
+                <p-rating [ngModel]="4" [readonly]="true" [cancel]="false"></p-rating>
+                <span class="ml-2 text-600 font-medium text-sm">24 Değerlendirme</span>
+            </div>
+
+            <div class="text-900 font-bold text-5xl mb-4 text-primary">
+                {{ (product.price || 0) | currency:'TRY':'symbol-narrow' }}
+            </div>
+
+            <p-divider></p-divider>
+
+            <div class="text-700 line-height-3 text-lg mb-5">
+                <p class="font-bold mb-2">Ürün Açıklaması:</p>
+                {{ product.description || 'Bu ürün için henüz bir açıklama girilmemiştir.' }}
+            </div>
+
+            <div class="surface-ground p-4 border-round flex flex-column sm:flex-row align-items-center gap-3">
+
+                <div class="flex align-items-center gap-2">
+                    <label class="font-bold mr-2">Adet:</label>
+                    <p-inputNumber [(ngModel)]="quantity" [showButtons]="true" buttonLayout="horizontal"
+                                   inputId="quantity" spinnerMode="horizontal" [min]="1" [max]="product.stockCount || 100"
+                                   decrementButtonClass="p-button-secondary" incrementButtonClass="p-button-secondary"
+                                   incrementButtonIcon="pi pi-plus" decrementButtonIcon="pi pi-minus"
+                                   [inputStyle]="{'width': '3rem', 'text-align': 'center'}">
+                    </p-inputNumber>
+                </div>
+
+                <div class="flex-grow-1 w-full">
+                    <p-button label="Sepete Ekle" icon="pi pi-shopping-cart" size="large" styleClass="w-full"
+                              [disabled]="!(product.stockCount || 0)"
+                              (onClick)="addToBasket()"></p-button>
+                </div>
+
+                <button pButton icon="pi pi-heart" class="p-button-outlined p-button-secondary p-button-rounded p-button-lg"
+                        pTooltip="Favorilere Ekle"></button>
+            </div>
+
+            <div class="mt-4 flex gap-4 text-600 text-sm">
+                <span class="flex align-items-center gap-2">
+                    <i class="pi pi-check-circle text-green-500"></i> Hızlı Kargo
+                </span>
+                <span class="flex align-items-center gap-2">
+                    <i class="pi pi-shield text-green-500"></i> Güvenli Ödeme
+                </span>
+                <span class="flex align-items-center gap-2">
+                    <i class="pi pi-refresh text-green-500"></i> 14 Gün İade
+                </span>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div *ngIf="loading" class="flex justify-content-center align-items-center h-screen">
+    <i class="pi pi-spin pi-spinner text-primary" style="font-size: 3rem"></i>
+</div>
+
+<!-- Add to Cart Modal -->
+<app-add-to-cart-modal
+  [(visible)]="showAddToCartModal"
+  [productData]="modalData"
+  (continueShoppingClick)="onContinueShopping()"
+  (goToCartClick)="onGoToCart()">
+</app-add-to-cart-modal>
