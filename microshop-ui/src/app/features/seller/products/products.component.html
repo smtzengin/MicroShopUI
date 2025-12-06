@@ -1,0 +1,240 @@
+<div class="seller-products">
+  <p-toast></p-toast>
+  <p-confirmDialog></p-confirmDialog>
+
+  <!-- Toolbar -->
+  <p-toolbar styleClass="mb-4">
+    <ng-template pTemplate="left">
+      <div class="flex align-items-center gap-2">
+        <h2 class="text-2xl font-bold text-900 mb-0">Ürün Yönetimi</h2>
+      </div>
+    </ng-template>
+
+    <ng-template pTemplate="right">
+      <div class="flex gap-2">
+        <p-button
+          icon="pi pi-upload"
+          label="İçe Aktar"
+          severity="help"
+          [outlined]="true"
+          (onClick)="importProducts()">
+        </p-button>
+        <p-button
+          icon="pi pi-download"
+          label="Dışa Aktar"
+          severity="secondary"
+          [outlined]="true"
+          (onClick)="exportProducts()">
+        </p-button>
+        <p-button
+          icon="pi pi-plus"
+          label="Yeni Ürün"
+          severity="success"
+          (onClick)="openNew()">
+        </p-button>
+      </div>
+    </ng-template>
+  </p-toolbar>
+
+  <!-- Ürün Tablosu -->
+  <p-card>
+    <!-- Loading State -->
+    <div class="text-center p-4" *ngIf="loading">
+      <i class="pi pi-spinner pi-spin text-4xl text-primary"></i>
+      <p class="text-600 mt-2">Ürünler yükleniyor...</p>
+    </div>
+
+    <p-table [value]="products" [paginator]="true" [rows]="10" styleClass="p-datatable-striped" *ngIf="!loading">
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="name">
+            Ürün Adı <p-sortIcon field="name"></p-sortIcon>
+          </th>
+          <th pSortableColumn="category">
+            Kategori <p-sortIcon field="category"></p-sortIcon>
+          </th>
+          <th pSortableColumn="price">
+            Fiyat <p-sortIcon field="price"></p-sortIcon>
+          </th>
+          <th pSortableColumn="stock">
+            Stok <p-sortIcon field="stock"></p-sortIcon>
+          </th>
+          <th pSortableColumn="sold">
+            Satılan <p-sortIcon field="sold"></p-sortIcon>
+          </th>
+          <th pSortableColumn="status">
+            Durum <p-sortIcon field="status"></p-sortIcon>
+          </th>
+          <th pSortableColumn="createdDate">
+            Oluşturma Tarihi <p-sortIcon field="createdDate"></p-sortIcon>
+          </th>
+          <th>İşlemler</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-product>
+        <tr>
+          <td>
+            <div class="flex align-items-center gap-2">
+              <div class="flex flex-column">
+                <span class="font-semibold">{{ product.name }}</span>
+                <span class="text-sm text-600">{{ product.description | slice:0:50 }}{{ product.description.length > 50 ? '...' : '' }}</span>
+              </div>
+            </div>
+          </td>
+          <td>{{ product.category }}</td>
+          <td>₺{{ product.price | number:'1.0-0':'tr' }}</td>
+          <td>
+            <span [class]="product.stock <= 5 ? 'text-orange-500 font-semibold' : ''">
+              {{ product.stock }}
+            </span>
+          </td>
+          <td>{{ product.sold }}</td>
+          <td>
+            <p-tag
+              [value]="getProductStatusLabel(product.status)"
+              [severity]="getProductStatusSeverity(product.status)">
+            </p-tag>
+          </td>
+          <td>{{ product.createdDate | date:'short':'tr' }}</td>
+          <td>
+            <div class="flex gap-1">
+              <p-button
+                icon="pi pi-pencil"
+                severity="info"
+                [text]="true"
+                size="small"
+                pTooltip="Düzenle"
+                (onClick)="editProduct(product)">
+              </p-button>
+              <p-button
+                icon="pi pi-trash"
+                severity="danger"
+                [text]="true"
+                size="small"
+                pTooltip="Sil"
+                (onClick)="deleteProduct(product)">
+              </p-button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </p-card>
+
+  <!-- Ürün Ekleme/Düzenleme Dialog -->
+  <p-dialog
+    [(visible)]="productDialog"
+    [header]="selectedProduct ? 'Ürün Düzenle' : 'Yeni Ürün Ekle'"
+    [modal]="true"
+    [closable]="false"
+    styleClass="p-fluid"
+    [style]="{ width: '600px' }">
+
+    <form [formGroup]="productForm" (ngSubmit)="saveProduct()">
+      <div class="field">
+        <label for="name">Ürün Adı *</label>
+        <input
+          pInputText
+          id="name"
+          formControlName="name"
+          [class.ng-dirty]="submitted && productForm.get('name')?.errors"
+          placeholder="Ürün adını giriniz">
+        <small class="p-error" *ngIf="submitted && productForm.get('name')?.errors?.['required']">
+          Ürün adı gereklidir.
+        </small>
+      </div>
+
+      <div class="field">
+        <label for="description">Açıklama *</label>
+        <textarea
+          pInputTextarea
+          id="description"
+          formControlName="description"
+          rows="3"
+          [class.ng-dirty]="submitted && productForm.get('description')?.errors"
+          placeholder="Ürün açıklamasını giriniz">
+        </textarea>
+        <small class="p-error" *ngIf="submitted && productForm.get('description')?.errors?.['required']">
+          Ürün açıklaması gereklidir.
+        </small>
+      </div>
+
+      <div class="formgrid grid">
+        <div class="field col">
+          <label for="category">Kategori *</label>
+          <p-dropdown
+            formControlName="categoryId"
+            [options]="categories"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Kategori seçiniz"
+            [class.ng-dirty]="submitted && productForm.get('categoryId')?.errors">
+          </p-dropdown>
+          <small class="p-error" *ngIf="submitted && productForm.get('categoryId')?.errors?.['required']">
+            Kategori seçimi gereklidir.
+          </small>
+        </div>        <div class="field col">
+          <label for="price">Fiyat (₺) *</label>
+          <p-inputNumber
+            formControlName="price"
+            mode="currency"
+            currency="TRY"
+            locale="tr-TR"
+            [class.ng-dirty]="submitted && productForm.get('price')?.errors">
+          </p-inputNumber>
+          <small class="p-error" *ngIf="submitted && productForm.get('price')?.errors?.['required']">
+            Fiyat gereklidir.
+          </small>
+          <small class="p-error" *ngIf="submitted && productForm.get('price')?.errors?.['min']">
+            Fiyat 0'dan büyük olmalıdır.
+          </small>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="stock">Stok Miktarı *</label>
+        <p-inputNumber
+          formControlName="stock"
+          [showButtons]="true"
+          [min]="0"
+          [class.ng-dirty]="submitted && productForm.get('stock')?.errors">
+        </p-inputNumber>
+        <small class="p-error" *ngIf="submitted && productForm.get('stock')?.errors?.['required']">
+          Stok miktarı gereklidir.
+        </small>
+        <small class="p-error" *ngIf="submitted && productForm.get('stock')?.errors?.['min']">
+          Stok miktarı 0'dan küçük olamaz.
+        </small>
+      </div>
+
+      <div class="field">
+        <label for="image">Ürün Resmi</label>
+        <p-fileUpload
+          mode="basic"
+          name="image"
+          accept="image/*"
+          [maxFileSize]="1000000"
+          chooseLabel="Resim Seç"
+          (onUpload)="onImageUpload($event)">
+        </p-fileUpload>
+      </div>
+    </form>
+
+    <ng-template pTemplate="footer">
+      <p-button
+        label="İptal"
+        icon="pi pi-times"
+        [text]="true"
+        severity="secondary"
+        (onClick)="hideDialog()">
+      </p-button>
+      <p-button
+        label="Kaydet"
+        icon="pi pi-check"
+        [disabled]="productForm.invalid"
+        (onClick)="saveProduct()">
+      </p-button>
+    </ng-template>
+  </p-dialog>
+</div>

@@ -7,17 +7,23 @@ import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
+import { DropdownModule } from 'primeng/dropdown';
 import { AuthService } from '../../../api/identity';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, ButtonModule, InputTextModule, PasswordModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, ButtonModule, InputTextModule, PasswordModule, DropdownModule],
   templateUrl: './register.component.html'
 })
 export class RegisterComponent {
   registerForm: FormGroup;
   loading = false;
+
+  roleOptions = [
+    { label: 'Müşteri', value: 'Customer' },
+    { label: 'Satıcı', value: 'Seller' }
+  ];
 
   constructor(
     private fb: FormBuilder,
@@ -29,7 +35,8 @@ export class RegisterComponent {
       fullName: ['', Validators.required],
       userName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(4)]]
+      password: ['', [Validators.required, Validators.minLength(4)]],
+      role: ['Customer', Validators.required]
     });
   }
 

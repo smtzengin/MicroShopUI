@@ -60,5 +60,14 @@ export class NavbarComponent implements OnInit {
   logout() {
     this.authStateService.logout();
   }
+
+  // Role kontrolü için yardımcı method
+  isSeller(): boolean {
+    return this.authStateService.isSeller();
+  }
+
+  isCustomer(): boolean {
+    return this.authStateService.isCustomer();
+  }
 }
 

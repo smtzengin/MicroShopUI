@@ -1,0 +1,505 @@
+<div class="container mx-auto px-4 py-6 max-w-6xl">
+
+  <!-- Page Header -->
+  <div class="flex align-items-center justify-content-between mb-6">
+    <div>
+      <h1 class="text-3xl font-bold text-900 m-0">Ödeme</h1>
+      <p class="text-600 m-0 mt-2">Güvenli ödeme ile siparişinizi tamamlayın</p>
+    </div>
+    <button
+      pButton
+      type="button"
+      label="Sepete Dön"
+      class="p-button-outlined"
+      icon="pi pi-arrow-left"
+      (click)="goBackToBasket()">
+    </button>
+  </div>
+
+  <!-- Progress Steps -->
+  <div class="mb-6">
+    <p-steps
+      [model]="steps"
+      [(activeIndex)]="activeIndex"
+      [readonly]="true"
+      styleClass="checkout-steps">
+    </p-steps>
+  </div>
+
+  <div class="grid">
+
+    <!-- Checkout Forms -->
+    <div class="col-12 lg:col-8">
+
+      <!-- Step 1: Address Form -->
+      <p-card
+        header="Teslimat Adresi"
+        styleClass="mb-4"
+        *ngIf="activeIndex === 0">
+
+        <form [formGroup]="addressForm" class="grid">
+
+          <!-- Name Fields -->
+          <div class="col-12 md:col-6">
+            <label for="firstName" class="block text-900 font-medium mb-2">Ad *</label>
+            <input
+              id="firstName"
+              type="text"
+              pInputText
+              formControlName="firstName"
+              placeholder="Adınızı girin"
+              class="w-full"
+              [class.ng-invalid]="addressForm.get('firstName')?.invalid && (addressForm.get('firstName')?.dirty || addressForm.get('firstName')?.touched)"
+            />
+            <small class="p-error" *ngIf="getFieldError(addressForm, 'firstName')">
+              {{ getFieldError(addressForm, 'firstName') }}
+            </small>
+          </div>
+
+          <div class="col-12 md:col-6">
+            <label for="lastName" class="block text-900 font-medium mb-2">Soyad *</label>
+            <input
+              id="lastName"
+              type="text"
+              pInputText
+              formControlName="lastName"
+              placeholder="Soyadınızı girin"
+              class="w-full"
+              [class.ng-invalid]="addressForm.get('lastName')?.invalid && (addressForm.get('lastName')?.dirty || addressForm.get('lastName')?.touched)"
+            />
+            <small class="p-error" *ngIf="getFieldError(addressForm, 'lastName')">
+              {{ getFieldError(addressForm, 'lastName') }}
+            </small>
+          </div>
+
+          <!-- Contact Info -->
+          <div class="col-12 md:col-6">
+            <label for="email" class="block text-900 font-medium mb-2">E-posta *</label>
+            <input
+              id="email"
+              type="email"
+              pInputText
+              formControlName="email"
+              placeholder="ornek@email.com"
+              class="w-full"
+              [class.ng-invalid]="addressForm.get('email')?.invalid && (addressForm.get('email')?.dirty || addressForm.get('email')?.touched)"
+            />
+            <small class="p-error" *ngIf="getFieldError(addressForm, 'email')">
+              {{ getFieldError(addressForm, 'email') }}
+            </small>
+          </div>
+
+          <div class="col-12 md:col-6">
+            <label for="phone" class="block text-900 font-medium mb-2">Telefon *</label>
+            <input
+              id="phone"
+              type="tel"
+              pInputText
+              formControlName="phone"
+              placeholder="05XX XXX XX XX"
+              class="w-full"
+              maxlength="11"
+              [class.ng-invalid]="addressForm.get('phone')?.invalid && (addressForm.get('phone')?.dirty || addressForm.get('phone')?.touched)"
+            />
+            <small class="p-error" *ngIf="getFieldError(addressForm, 'phone')">
+              {{ getFieldError(addressForm, 'phone') }}
+            </small>
+          </div>          <!-- Address -->
+          <div class="col-12">
+            <label for="address" class="block text-900 font-medium mb-2">Adres *</label>
+            <textarea
+              id="address"
+              pInputTextarea
+              formControlName="address"
+              placeholder="Tam adresinizi yazın"
+              class="w-full"
+              rows="3"
+              [class.ng-invalid]="addressForm.get('address')?.invalid && (addressForm.get('address')?.dirty || addressForm.get('address')?.touched)"
+            ></textarea>
+            <small class="p-error" *ngIf="getFieldError(addressForm, 'address')">
+              {{ getFieldError(addressForm, 'address') }}
+            </small>
+          </div>
+
+          <!-- Location -->
+          <div class="col-12 md:col-4">
+            <label for="city" class="block text-900 font-medium mb-2">Şehir *</label>
+            <p-dropdown
+              id="city"
+              formControlName="city"
+              [options]="cities"
+              optionLabel="name"
+              optionValue="name"
+              placeholder="Şehir seçin"
+              styleClass="w-full"
+              [class.ng-invalid]="addressForm.get('city')?.invalid && (addressForm.get('city')?.dirty || addressForm.get('city')?.touched)"
+            ></p-dropdown>
+            <small class="p-error" *ngIf="getFieldError(addressForm, 'city')">
+              {{ getFieldError(addressForm, 'city') }}
+            </small>
+          </div>
+
+          <div class="col-12 md:col-4">
+            <label for="district" class="block text-900 font-medium mb-2">İlçe *</label>
+            <input
+              id="district"
+              type="text"
+              pInputText
+              formControlName="district"
+              placeholder="İlçe adı"
+              class="w-full"
+              [class.ng-invalid]="addressForm.get('district')?.invalid && (addressForm.get('district')?.dirty || addressForm.get('district')?.touched)"
+            />
+            <small class="p-error" *ngIf="getFieldError(addressForm, 'district')">
+              {{ getFieldError(addressForm, 'district') }}
+            </small>
+          </div>
+
+          <div class="col-12 md:col-4">
+            <label for="postalCode" class="block text-900 font-medium mb-2">Posta Kodu *</label>
+            <input
+              id="postalCode"
+              type="text"
+              pInputText
+              formControlName="postalCode"
+              placeholder="34100"
+              maxlength="5"
+              class="w-full"
+              [class.ng-invalid]="addressForm.get('postalCode')?.invalid && (addressForm.get('postalCode')?.dirty || addressForm.get('postalCode')?.touched)"
+            />
+            <small class="p-error" *ngIf="getFieldError(addressForm, 'postalCode')">
+              {{ getFieldError(addressForm, 'postalCode') }}
+            </small>
+          </div>
+
+        </form>
+
+        <ng-template pTemplate="footer">
+          <div class="flex justify-content-end">
+            <button
+              pButton
+              type="button"
+              label="Devam Et"
+              icon="pi pi-arrow-right"
+              iconPos="right"
+              (click)="nextStep()">
+            </button>
+          </div>
+        </ng-template>
+
+      </p-card>
+
+      <!-- Step 2: Payment Form -->
+      <p-card
+        header="Ödeme Bilgileri"
+        styleClass="mb-4"
+        *ngIf="activeIndex === 1">
+
+        <form [formGroup]="paymentForm">
+
+          <!-- Payment Method Selection -->
+          <div class="mb-4">
+            <h4 class="text-lg font-semibold mb-3">Ödeme Yöntemi</h4>
+            <div class="grid">
+              <div class="col-12 md:col-4" *ngFor="let method of paymentMethods">
+                <div class="payment-method-card p-3 border-round cursor-pointer"
+                     [class.selected]="selectedPaymentMethod === method.id"
+                     (click)="paymentForm.get('paymentMethod')?.setValue(method.id); onPaymentMethodChange()">
+                  <div class="flex align-items-center mb-2">
+                    <i [class]="method.icon" class="text-xl mr-2"></i>
+                    <span class="font-medium">{{ method.name }}</span>
+                    <p-radioButton
+                      [value]="method.id"
+                      formControlName="paymentMethod"
+                      class="ml-auto"
+                      (onChange)="onPaymentMethodChange()">
+                    </p-radioButton>
+                  </div>
+                  <p class="text-sm text-600 m-0">{{ method.description }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Credit Card Fields -->
+          <div *ngIf="selectedPaymentMethod !== 'bank-transfer'" class="grid">
+
+            <div class="col-12">
+              <label for="cardholderName" class="block text-900 font-medium mb-2">Kart Sahibi Adı *</label>
+              <input
+                id="cardholderName"
+                type="text"
+                pInputText
+                formControlName="cardholderName"
+                placeholder="Kart üzerindeki isim"
+                class="w-full"
+                [class.ng-invalid]="paymentForm.get('cardholderName')?.invalid && (paymentForm.get('cardholderName')?.dirty || paymentForm.get('cardholderName')?.touched)"
+              />
+              <small class="p-error" *ngIf="getFieldError(paymentForm, 'cardholderName')">
+                {{ getFieldError(paymentForm, 'cardholderName') }}
+              </small>
+            </div>
+
+            <div class="col-12">
+              <label for="cardNumber" class="block text-900 font-medium mb-2">Kart Numarası *</label>
+              <p-inputMask
+                id="cardNumber"
+                mask="9999 9999 9999 9999"
+                formControlName="cardNumber"
+                placeholder="1234 5678 9012 3456"
+                styleClass="w-full"
+                [class.ng-invalid]="paymentForm.get('cardNumber')?.invalid && (paymentForm.get('cardNumber')?.dirty || paymentForm.get('cardNumber')?.touched)"
+              ></p-inputMask>
+              <small class="p-error" *ngIf="getFieldError(paymentForm, 'cardNumber')">
+                {{ getFieldError(paymentForm, 'cardNumber') }}
+              </small>
+            </div>
+
+            <div class="col-12 md:col-6">
+              <label for="expiryDate" class="block text-900 font-medium mb-2">Son Kullanma Tarihi *</label>
+              <p-inputMask
+                id="expiryDate"
+                mask="99/99"
+                formControlName="expiryDate"
+                placeholder="MM/YY"
+                styleClass="w-full"
+                [class.ng-invalid]="paymentForm.get('expiryDate')?.invalid && (paymentForm.get('expiryDate')?.dirty || paymentForm.get('expiryDate')?.touched)"
+              ></p-inputMask>
+              <small class="p-error" *ngIf="getFieldError(paymentForm, 'expiryDate')">
+                {{ getFieldError(paymentForm, 'expiryDate') }}
+              </small>
+            </div>
+
+            <div class="col-12 md:col-6">
+              <label for="cvv" class="block text-900 font-medium mb-2">CVV *</label>
+              <p-inputMask
+                id="cvv"
+                mask="999"
+                formControlName="cvv"
+                placeholder="123"
+                styleClass="w-full"
+                [class.ng-invalid]="paymentForm.get('cvv')?.invalid && (paymentForm.get('cvv')?.dirty || paymentForm.get('cvv')?.touched)"
+              ></p-inputMask>
+              <small class="p-error" *ngIf="getFieldError(paymentForm, 'cvv')">
+                {{ getFieldError(paymentForm, 'cvv') }}
+              </small>
+            </div>
+
+          </div>
+
+          <!-- Bank Transfer Info -->
+          <div *ngIf="selectedPaymentMethod === 'bank-transfer'" class="bg-blue-50 border-round p-4 mb-4">
+            <div class="flex align-items-center mb-3">
+              <i class="pi pi-info-circle text-blue-600 mr-2"></i>
+              <span class="font-semibold text-blue-800">Havale/EFT Bilgileri</span>
+            </div>
+            <div class="text-sm text-blue-700">
+              <p><strong>Banka:</strong> Örnek Bankası</p>
+              <p><strong>IBAN:</strong> TR12 3456 7890 1234 5678 9012 34</p>
+              <p><strong>Hesap Sahibi:</strong> MicroShop A.Ş.</p>
+              <p class="mt-2">
+                <strong>Not:</strong> Havale açıklamasına sipariş numaranızı yazınız.
+                Ödeme onaylandıktan sonra siparişiniz hazırlanacaktır.
+              </p>
+            </div>
+          </div>
+
+          <!-- Terms Agreement -->
+          <div class="flex align-items-center mt-4">
+            <p-checkbox
+              formControlName="agreeTerms"
+              binary="true"
+              inputId="agreeTerms"
+              [class.ng-invalid]="paymentForm.get('agreeTerms')?.invalid && (paymentForm.get('agreeTerms')?.dirty || paymentForm.get('agreeTerms')?.touched)"
+            ></p-checkbox>
+            <label for="agreeTerms" class="ml-2 text-sm">
+              <a href="#" class="text-primary">Kullanım şartlarını</a> ve
+              <a href="#" class="text-primary">gizlilik politikasını</a>
+              kabul ediyorum *
+            </label>
+          </div>
+          <small class="p-error block" *ngIf="paymentForm.get('agreeTerms')?.invalid && (paymentForm.get('agreeTerms')?.dirty || paymentForm.get('agreeTerms')?.touched)">
+            Kullanım şartlarını kabul etmelisiniz.
+          </small>
+
+        </form>
+
+        <ng-template pTemplate="footer">
+          <div class="flex justify-content-between">
+            <button
+              pButton
+              type="button"
+              label="Geri"
+              class="p-button-outlined"
+              icon="pi pi-arrow-left"
+              (click)="previousStep()">
+            </button>
+            <button
+              pButton
+              type="button"
+              label="Devam Et"
+              icon="pi pi-arrow-right"
+              iconPos="right"
+              (click)="nextStep()">
+            </button>
+          </div>
+        </ng-template>
+
+      </p-card>
+
+      <!-- Step 3: Order Confirmation -->
+      <p-card
+        header="Sipariş Onayı"
+        styleClass="mb-4"
+        *ngIf="activeIndex === 2">
+
+        <!-- Address Summary -->
+        <div class="mb-4">
+          <h4 class="text-lg font-semibold mb-2">Teslimat Adresi</h4>
+          <div class="bg-gray-50 border-round p-3">
+            <p class="m-0"><strong>{{ addressForm.get('firstName')?.value }} {{ addressForm.get('lastName')?.value }}</strong></p>
+            <p class="m-0">{{ addressForm.get('address')?.value }}</p>
+            <p class="m-0">{{ addressForm.get('district')?.value }}, {{ addressForm.get('city')?.value }} {{ addressForm.get('postalCode')?.value }}</p>
+            <p class="m-0">{{ addressForm.get('phone')?.value }}</p>
+            <p class="m-0">{{ addressForm.get('email')?.value }}</p>
+          </div>
+        </div>
+
+        <!-- Payment Method Summary -->
+        <div class="mb-4">
+          <h4 class="text-lg font-semibold mb-2">Ödeme Yöntemi</h4>
+          <div class="bg-gray-50 border-round p-3">
+            <ng-container *ngFor="let method of paymentMethods">
+              <p class="m-0" *ngIf="method.id === selectedPaymentMethod">
+                <i [class]="method.icon" class="mr-2"></i>
+                {{ method.name }}
+                <span *ngIf="selectedPaymentMethod !== 'bank-transfer'">
+                  - {{ getMaskedCardNumber() }}
+                </span>
+              </p>
+            </ng-container>
+          </div>
+        </div>
+
+        <!-- Order Items -->
+        <div class="mb-4">
+          <h4 class="text-lg font-semibold mb-2">Sipariş İçeriği</h4>
+          <div class="bg-gray-50 border-round p-3">
+            <div *ngFor="let item of basketItems$ | async" class="flex align-items-center justify-content-between py-2 border-bottom-1 border-200">
+              <div class="flex align-items-center">
+                <img
+                  [src]="item.imageUrl || 'https://via.placeholder.com/50x50'"
+                  [alt]="item.name"
+                  class="w-3rem h-3rem object-fit-cover border-round mr-3"
+                />
+                <div>
+                  <p class="m-0 font-medium">{{ item.name }}</p>
+                  <small class="text-600">{{ item.quantity }}x {{ item.price | currency: 'TRY':'symbol':'1.2-2':'tr' }}</small>
+                </div>
+              </div>
+              <div class="font-semibold">
+                {{ (item.quantity * item.price) | currency: 'TRY':'symbol':'1.2-2':'tr' }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <ng-template pTemplate="footer">
+          <div class="flex justify-content-between">
+            <button
+              pButton
+              type="button"
+              label="Geri"
+              class="p-button-outlined"
+              icon="pi pi-arrow-left"
+              (click)="previousStep()">
+            </button>
+            <button
+              pButton
+              type="button"
+              label="Siparişi Tamamla"
+              class="p-button-success"
+              icon="pi pi-check"
+              iconPos="right"
+              [loading]="isProcessingPayment"
+              (click)="completePayment()">
+            </button>
+          </div>
+        </ng-template>
+
+      </p-card>
+
+    </div>
+
+    <!-- Order Summary Sidebar -->
+    <div class="col-12 lg:col-4">
+      <div class="sticky top-0">
+        <p-card
+          header="Sipariş Özeti"
+          styleClass="order-summary-card"
+          *ngIf="basketSummary$ | async as summary">
+
+          <div class="space-y-3">
+
+            <!-- Items Count -->
+            <div class="flex justify-content-between align-items-center">
+              <span class="text-600">Ürün Adedi:</span>
+              <span class="font-semibold">{{ summary.totalItems }}</span>
+            </div>
+
+            <!-- Subtotal -->
+            <div class="flex justify-content-between align-items-center">
+              <span class="text-600">Ara Toplam:</span>
+              <span class="font-semibold">{{ summary.totalPrice | currency: 'TRY':'symbol':'1.2-2':'tr' }}</span>
+            </div>
+
+            <!-- Shipping -->
+            <div class="flex justify-content-between align-items-center">
+              <span class="text-600">Kargo:</span>
+              <span class="font-semibold text-green-600">Ücretsiz</span>
+            </div>
+
+            <!-- Tax -->
+            <div class="flex justify-content-between align-items-center">
+              <span class="text-600">KDV (%20):</span>
+              <span class="font-semibold">{{ (summary.totalPrice * 0.20) | currency: 'TRY':'symbol':'1.2-2':'tr' }}</span>
+            </div>
+
+            <p-divider></p-divider>
+
+            <!-- Total -->
+            <div class="flex justify-content-between align-items-center">
+              <span class="text-xl font-bold text-900">Toplam:</span>
+              <span class="text-2xl font-bold text-primary">
+                {{ (summary.totalPrice * 1.20) | currency: 'TRY':'symbol':'1.2-2':'tr' }}
+              </span>
+            </div>
+
+          </div>
+
+        </p-card>
+
+        <!-- Security Info -->
+        <div class="mt-4 p-3 bg-green-50 border-round-lg">
+          <div class="flex align-items-center gap-2 mb-2">
+            <i class="pi pi-shield text-green-600"></i>
+            <span class="font-semibold text-green-800">Güvenli Ödeme</span>
+          </div>
+          <p class="text-sm text-green-700 m-0 mb-2">
+            256-bit SSL sertifikası ile korumalı ödeme işlemi
+          </p>
+          <div class="flex align-items-center gap-2">
+            <i class="pi pi-lock text-green-600 text-sm"></i>
+            <span class="text-xs text-green-600">Kart bilgileriniz güvende</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- Toast Messages -->
+<p-toast></p-toast>

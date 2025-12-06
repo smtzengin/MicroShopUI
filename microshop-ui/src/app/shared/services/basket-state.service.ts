@@ -25,7 +25,10 @@ export class BasketStateService {
   private readonly BASKET_KEY = 'microshop_basket';
 
   private basketItemsSubject = new BehaviorSubject<BasketItem[]>(this.loadBasketFromStorage());
+  private basketLoadingSubject = new BehaviorSubject<boolean>(false);
+
   public basketItems$ = this.basketItemsSubject.asObservable();
+  public basketLoading$ = this.basketLoadingSubject.asObservable();
 
   // Derived observables
   public basketSummary$: Observable<BasketSummary> = this.basketItems$.pipe(
@@ -37,7 +40,10 @@ export class BasketStateService {
   );
 
   public basketCount$ = this.basketSummary$.pipe(
-    map(summary => summary.totalItems)
+    map(summary => {
+      console.log('basketCount$ hesaplandı:', summary.totalItems);
+      return summary.totalItems;
+    })
   );
 
   constructor(
@@ -131,9 +137,9 @@ export class BasketStateService {
     }
 
     console.log('Ürün local sepete eklendi:', product);
-  }
-
-  // Sepetten ürün kaldır
+    console.log('Güncel sepet items:', this.basketItemsSubject.value);
+    console.log('Güncel sepet count:', this.basketItemsSubject.value.reduce((sum, item) => sum + item.quantity, 0));
+  }  // Sepetten ürün kaldır
   removeFromBasket(itemId: string): void {
     const currentItems = this.basketItemsSubject.value;
     const itemToRemove = currentItems.find(item => item.id === itemId);
@@ -224,32 +230,44 @@ export class BasketStateService {
 
   // Sepeti temizle
   clearBasket(): void {
+    console.log('clearBasket() çağrıldı');
+    console.log('Auth state:', this.authStateService.isAuthenticated());
+
+    this.basketLoadingSubject.next(true); // Loading başlat
+
     // Eğer kullanıcı login ise API sepetini de temizle
     if (this.authStateService.isAuthenticated()) {
       const userId = this.authStateService.getCurrentUserId();
+      console.log('User ID:', userId);
+
       if (userId) {
+        console.log('API sepetini temizlemeye başlıyorum...');
         this.basketApiService.apiBasketUserIdDelete(userId).subscribe({
           next: () => {
-            console.log('API sepeti temizlendi');
+            console.log('API sepeti başarıyla temizlendi');
             this.updateBasket([]);
+            console.log('Local sepet de temizlendi');
+            this.basketLoadingSubject.next(false); // Loading bitir
           },
           error: (error) => {
             console.error('API sepet temizleme hatası:', error);
             // API hatası olursa sadece local sepeti temizle
+            console.log('API hatası nedeniyle sadece local sepet temizleniyor');
             this.updateBasket([]);
+            this.basketLoadingSubject.next(false); // Loading bitir
           }
         });
       } else {
+        console.log('User ID bulunamadı, sadece local sepet temizleniyor');
         this.updateBasket([]);
+        this.basketLoadingSubject.next(false); // Loading bitir
       }
     } else {
+      console.log('Kullanıcı giriş yapmamış, sadece local sepet temizleniyor');
       this.updateBasket([]);
+      this.basketLoadingSubject.next(false); // Loading bitir
     }
-
-    console.log('Sepet temizlendi');
-  }
-
-  // Belirli bir ürünün sepetteki miktarını getir
+  }  // Belirli bir ürünün sepetteki miktarını getir
   getProductQuantityInBasket(productId: string): Observable<number> {
     return this.basketItems$.pipe(
       map(items => {
@@ -267,8 +285,13 @@ export class BasketStateService {
   }
 
   private updateBasket(items: BasketItem[]): void {
+    console.log('updateBasket çağrıldı, items:', items);
     this.basketItemsSubject.next(items);
     this.saveBasketToStorage(items);
+
+    // Observable'ların yeni değerlerini test et
+    const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
+    console.log('updateBasket sonrası toplam items:', totalItems);
   }
 
   private loadBasketFromStorage(): BasketItem[] {

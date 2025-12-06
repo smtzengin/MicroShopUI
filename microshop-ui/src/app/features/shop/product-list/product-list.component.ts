@@ -83,10 +83,19 @@ export class ProductListComponent implements OnInit {
   // Ürünleri Çek (Filtreli ve Sayfalı)
   loadProducts() {
     this.loading = true;
+    console.log('loadProducts çağrıldı');
 
-    // PrimeNG Paginator 0 tabanlı çalışır, API 1 tabanlı sayfa ister.
     const pageNumber = this.showAllProducts ? 1 : (this.first / this.rows) + 1;
-    const pageSize = this.showAllProducts ? 1000 : this.rows; // Tüm ürünler için büyük sayı
+    const pageSize = this.showAllProducts ? 1000 : this.rows;
+
+    console.log('Stock API parametreleri:', {
+      pageNumber,
+      pageSize,
+      searchText: this.searchText,
+      categoryId: this.selectedCategoryId,
+      minPrice: this.minPriceFilter,
+      maxPrice: this.maxPriceFilter
+    });
 
     this.stockService.apiStockGet(
       pageNumber,
@@ -99,16 +108,20 @@ export class ProductListComponent implements OnInit {
       true // Sadece onaylılar
     ).subscribe({
       next: (res) => {
+        console.log('Stock API response:', res);
         this.products = res.data || [];
         this.totalRecords = res.totalRecords || 0;
         this.loading = false;
+
+        console.log('Yüklenen ürün sayısı:', this.products.length);
+        console.log('Toplam kayıt sayısı:', this.totalRecords);
 
         // Change detection'ı zorlayalım
         this.cdr.detectChanges();
       },
       error: (err) => {
         this.loading = false;
-        console.error('API Hatası:', err);
+        console.error('Stock API Hatası:', err);
         this.messageService.add({severity: 'error', summary: 'Hata', detail: 'Ürünler yüklenemedi.'});
       }
     });

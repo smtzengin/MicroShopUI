@@ -12,6 +12,7 @@
 export interface RegisterDto { 
     fullName?: string | null;
     email?: string | null;
+    role?: string | null;
     password?: string | null;
     userName?: string | null;
 }

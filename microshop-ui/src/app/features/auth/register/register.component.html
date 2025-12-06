@@ -47,6 +47,11 @@
                         <p-password formControlName="password" [toggleMask]="true" styleClass="w-full" inputStyleClass="w-full" placeholder="••••••••"></p-password>
                     </div>
 
+                    <div>
+                        <label class="block text-900 font-medium mb-2">Hesap Türü</label>
+                        <p-dropdown formControlName="role" [options]="roleOptions" optionLabel="label" optionValue="value" class="w-full" placeholder="Hesap türünüzü seçin"></p-dropdown>
+                    </div>
+
                     <p-button label="Hesap Oluştur" type="submit" [loading]="loading" styleClass="w-full mt-2"></p-button>
                 </form>
             </div>

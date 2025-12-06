@@ -1,0 +1,216 @@
+.space-y-3 > * + * {
+  margin-top: 0.75rem;
+}
+
+// Steps styling
+::ng-deep .checkout-steps {
+  .p-steps-item {
+    .p-menuitem-link {
+      background: transparent;
+      border: none;
+      box-shadow: none;
+    }
+  }
+}
+
+// Payment method cards
+.payment-method-card {
+  border: 2px solid #e5e7eb;
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: var(--primary-color);
+    background: rgba(var(--primary-color-rgb), 0.05);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  &.selected {
+    border-color: var(--primary-color);
+    background: rgba(var(--primary-color-rgb), 0.1);
+    box-shadow: 0 4px 16px rgba(var(--primary-color-rgb), 0.2);
+  }
+}
+
+// Order summary styling
+::ng-deep .order-summary-card {
+  .p-card-header {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-600, var(--primary-color)));
+    color: white;
+    border-radius: 8px 8px 0 0;
+    padding: 1.5rem;
+  }
+
+  .p-card-body {
+    padding: 1.5rem;
+  }
+
+  .p-card-footer {
+    padding: 0 1.5rem 1.5rem 1.5rem;
+    background: transparent;
+    border-top: none;
+  }
+}
+
+// Form styling improvements
+::ng-deep {
+  .p-inputtext,
+  .p-inputmask,
+  .p-dropdown {
+    &.ng-invalid.ng-touched,
+    &.ng-invalid.ng-dirty {
+      border-color: #ef4444;
+
+      &:focus {
+        border-color: #ef4444;
+        box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+      }
+    }
+  }
+
+  .p-checkbox {
+    &.ng-invalid.ng-touched,
+    &.ng-invalid.ng-dirty {
+      .p-checkbox-box {
+        border-color: #ef4444;
+      }
+    }
+  }
+}
+
+// Error message styling
+.p-error {
+  color: #ef4444;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  display: block;
+}
+
+// Security badge styling
+.bg-green-50 {
+  background-color: #f0f9ff;
+  border: 1px solid #bbf7d0;
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .grid {
+    .col-12 {
+      padding: 0.5rem;
+    }
+
+    .col-md-6,
+    .col-md-4 {
+      padding: 0.5rem;
+    }
+  }
+
+  ::ng-deep .order-summary-card {
+    margin-top: 2rem;
+  }
+
+  .payment-method-card {
+    margin-bottom: 1rem;
+  }
+}
+
+// Loading state styling
+::ng-deep .p-button.p-component.p-button-loading {
+  .pi-spin {
+    animation: fa-spin 1s infinite linear;
+  }
+}
+
+@keyframes fa-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+// Card animation
+::ng-deep .p-card {
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+}
+
+// Steps active state
+::ng-deep .checkout-steps {
+  .p-steps-item.p-highlight {
+    .p-steps-number {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .p-steps-title {
+      color: var(--primary-color);
+      font-weight: 600;
+    }
+  }
+
+  .p-steps-item.p-disabled {
+    .p-steps-number {
+      background: #e5e7eb;
+      color: #9ca3af;
+    }
+
+    .p-steps-title {
+      color: #9ca3af;
+    }
+  }
+}
+
+// Sticky positioning for sidebar
+.sticky {
+  position: sticky;
+  top: 2rem;
+  z-index: 10;
+}
+
+// Focus states for accessibility
+::ng-deep {
+  .p-inputtext:focus,
+  .p-inputmask:focus,
+  .p-dropdown:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+  }
+
+  .p-checkbox:focus {
+    .p-checkbox-box {
+      outline: 2px solid var(--primary-color);
+      outline-offset: 2px;
+    }
+  }
+
+  .p-radiobutton:focus {
+    .p-radiobutton-box {
+      outline: 2px solid var(--primary-color);
+      outline-offset: 2px;
+    }
+  }
+}
+
+// High contrast support for form errors
+@media (prefers-contrast: high) {
+  .p-error {
+    color: #dc2626;
+    font-weight: 600;
+  }
+
+  ::ng-deep .p-inputtext.ng-invalid,
+  ::ng-deep .p-inputmask.ng-invalid,
+  ::ng-deep .p-dropdown.ng-invalid {
+    border-color: #dc2626;
+    border-width: 2px;
+  }
+}

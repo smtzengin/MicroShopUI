@@ -3,19 +3,17 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 
-// API Servisleri
 import { StockService, Product } from '../../../api/stock';
 import { AuthStateService } from '../../../shared/services/auth-state.service';
 import { BasketStateService } from '../../../shared/services/basket-state.service';
 import { AddToCartModalComponent, AddToCartModalData } from '../../../shared/components/add-to-cart-modal/add-to-cart-modal.component';
 
-// PrimeNG
 import { ButtonModule } from 'primeng/button';
-import { InputNumberModule } from 'primeng/inputnumber'; // Adet seçimi için
+import { InputNumberModule } from 'primeng/inputnumber';
 import { TagModule } from 'primeng/tag';
 import { RatingModule } from 'primeng/rating';
 import { DividerModule } from 'primeng/divider';
-import { ImageModule } from 'primeng/image'; // Resim büyütme özelliği
+import { ImageModule } from 'primeng/image';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 
@@ -69,13 +67,16 @@ export class ProductDetailComponent implements OnInit {
 
   loadProduct(id: string) {
     this.loading = true;
+    console.log('loadProduct çağrıldı, id:', id);
+
     this.stockService.apiStockIdGet(id).subscribe({
       next: (res) => {
+        console.log('Stock detail API response:', res);
         this.product = res;
         this.loading = false;
       },
       error: (err) => {
-        console.error(err);
+        console.error('Stock detail API hatası:', err);
         this.messageService.add({ severity: 'error', summary: 'Hata', detail: 'Ürün bulunamadı.' });
         this.loading = false;
         // Hata varsa listeye dön

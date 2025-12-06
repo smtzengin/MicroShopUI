@@ -1,0 +1,92 @@
+<div class="seller-layout">
+  <!-- Sidebar -->
+  <div class="sidebar" [class.collapsed]="isSidebarCollapsed">
+    <div class="sidebar-header">
+      <div class="flex align-items-center gap-2" *ngIf="!isSidebarCollapsed">
+        <i class="pi pi-shop text-primary text-2xl"></i>
+        <span class="font-bold text-xl">Satıcı Paneli</span>
+      </div>
+      <div class="flex justify-content-center" *ngIf="isSidebarCollapsed">
+        <i class="pi pi-shop text-primary text-2xl"></i>
+      </div>
+    </div>
+
+    <!-- User Info -->
+    <div class="user-info" *ngIf="user">
+      <div class="flex align-items-center gap-2" *ngIf="!isSidebarCollapsed">
+        <p-avatar
+          [label]="(user.name?.charAt(0) || user.email.charAt(0) || 'S').toUpperCase()"
+          shape="circle"
+          styleClass="bg-primary">
+        </p-avatar>
+        <div class="user-details">
+          <div class="font-semibold text-900">{{ user.name || 'Satıcı' }}</div>
+          <div class="text-600 text-sm">{{ user.email }}</div>
+        </div>
+      </div>
+      <div class="flex justify-content-center" *ngIf="isSidebarCollapsed">
+        <p-avatar
+          [label]="(user.name?.charAt(0) || user.email.charAt(0) || 'S').toUpperCase()"
+          shape="circle"
+          styleClass="bg-primary">
+        </p-avatar>
+      </div>
+    </div>
+
+    <!-- Navigation Menu -->
+    <div class="sidebar-menu">
+      <ul class="menu-list">
+        <li *ngFor="let item of menuItems" class="menu-item">
+          <div *ngIf="item.separator" class="menu-separator"></div>
+
+          <a *ngIf="!item.separator"
+             class="menu-link"
+             [routerLink]="item.routerLink"
+             routerLinkActive="active"
+             [routerLinkActiveOptions]="{ exact: item.routerLink?.[0] === '/seller' }"
+             (click)="onMenuItemClick(item, $event)">
+
+            <i [class]="item.icon" class="menu-icon"></i>
+            <span class="menu-label" *ngIf="!isSidebarCollapsed">{{ item.label }}</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content" [class.sidebar-collapsed]="isSidebarCollapsed">
+    <!-- Top Header -->
+    <div class="top-header">
+      <div class="flex align-items-center gap-2">
+        <p-button
+          icon="pi pi-bars"
+          [text]="true"
+          size="large"
+          (onClick)="toggleSidebar()">
+        </p-button>
+        <h1 class="text-2xl font-bold text-900 mb-0">Satıcı Paneli</h1>
+      </div>
+
+      <div class="flex align-items-center gap-2">
+        <p-button
+          icon="pi pi-bell"
+          [text]="true"
+          severity="secondary"
+          pTooltip="Bildirimler">
+        </p-button>
+        <p-button
+          icon="pi pi-question-circle"
+          [text]="true"
+          severity="secondary"
+          pTooltip="Yardım">
+        </p-button>
+      </div>
+    </div>
+
+    <!-- Page Content -->
+    <div class="page-content">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

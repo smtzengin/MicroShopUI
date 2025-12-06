@@ -1,18 +1,19 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { Router } from '@angular/router';
 
 export interface User {
   id: string;
   email: string;
   name?: string;
+  roles?: string[];
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthStateService {
-  private readonly TOKEN_KEY = 'auth_token';
-  private readonly REFRESH_TOKEN_KEY = 'refresh_token';
+  private readonly TOKEN_KEY = 'auth_token'; // Tek token yeterli
   private readonly USER_KEY = 'user_info';
 
   private currentUserSubject = new BehaviorSubject<User | null>(this.getUserFromStorage());
@@ -21,11 +22,26 @@ export class AuthStateService {
   private isLoggedInSubject = new BehaviorSubject<boolean>(this.hasValidToken());
   public isLoggedIn$ = this.isLoggedInSubject.asObservable();
 
+  private router = inject(Router);
+
   constructor() {
     console.log('AuthStateService başlatıldı');
     console.log('Token:', this.getToken());
     console.log('User:', this.getUserFromStorage());
     console.log('hasValidToken:', this.hasValidToken());
+
+    // Token süresi dolmuşsa otomatik logout yap
+    if (this.getToken() && !this.hasValidToken()) {
+      console.log('Token süresi dolmuş, otomatik logout yapılıyor');
+      this.logout();
+
+      // Login sayfasına yönlendir (bir süre sonra)
+      setTimeout(() => {
+        this.router.navigate(['/auth/login'], {
+          queryParams: { message: 'Oturum süreniz dolmuştur. Lütfen tekrar giriş yapın.' }
+        });
+      }, 1000);
+    }
   }
 
   // Token işlemleri
@@ -36,14 +52,6 @@ export class AuthStateService {
 
   getToken(): string | null {
     return localStorage.getItem(this.TOKEN_KEY);
-  }
-
-  setRefreshToken(token: string): void {
-    localStorage.setItem(this.REFRESH_TOKEN_KEY, token);
-  }
-
-  getRefreshToken(): string | null {
-    return localStorage.getItem(this.REFRESH_TOKEN_KEY);
   }
 
   // Kullanıcı işlemleri
@@ -113,17 +121,15 @@ export class AuthStateService {
   // Logout
   logout(): void {
     localStorage.removeItem(this.TOKEN_KEY);
-    localStorage.removeItem(this.REFRESH_TOKEN_KEY);
     localStorage.removeItem(this.USER_KEY);
     this.currentUserSubject.next(null);
     this.isLoggedInSubject.next(false);
   }
 
   // Login success sonrası
-  loginSuccess(token: string, refreshToken: string, user: User): void {
+  loginSuccess(token: string, user: User): void {
     console.log('loginSuccess çağrıldı:', { token, user });
     this.setToken(token);
-    this.setRefreshToken(refreshToken);
     this.setUser(user);
     console.log('Login sonrası durumlar:', {
       isLoggedIn: this.isLoggedInSubject.value,
@@ -168,5 +174,28 @@ export class AuthStateService {
 
     console.warn('User ID bulunamadı!');
     return null;
+  }
+
+  // Role kontrolü için yeni metodlar
+  hasRole(role: string): boolean {
+    const user = this.getCurrentUser();
+    return user?.roles?.includes(role) || false;
+  }
+
+  isSeller(): boolean {
+    return this.hasRole('Seller');
+  }
+
+  isCustomer(): boolean {
+    return this.hasRole('Customer');
+  }
+
+  isAdmin(): boolean {
+    return this.hasRole('Admin');
+  }
+
+  getUserRoles(): string[] {
+    const user = this.getCurrentUser();
+    return user?.roles || [];
   }
 }

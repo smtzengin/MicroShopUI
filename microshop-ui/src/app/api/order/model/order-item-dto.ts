@@ -12,6 +12,7 @@
 export interface OrderItemDto { 
     productId?: string;
     price?: number;
+    sellerId?: string;
     quantity?: number;
     productName?: string | null;
 }

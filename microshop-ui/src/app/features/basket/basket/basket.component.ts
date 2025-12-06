@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 
@@ -39,18 +39,21 @@ import { AuthStateService } from '../../../shared/services/auth-state.service';
 export class BasketComponent implements OnInit {
   basketItems$!: Observable<BasketItem[]>;
   basketSummary$!: Observable<BasketSummary>;
+  basketLoading$!: Observable<boolean>;
   isLoggedIn$!: Observable<boolean>;
 
   constructor(
     private basketStateService: BasketStateService,
     private authStateService: AuthStateService,
     private confirmationService: ConfirmationService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private router: Router
   ) {}
 
   ngOnInit() {
     this.basketItems$ = this.basketStateService.basketItems$;
     this.basketSummary$ = this.basketStateService.basketSummary$;
+    this.basketLoading$ = this.basketStateService.basketLoading$;
     this.isLoggedIn$ = this.authStateService.isLoggedIn$;
   }
 
@@ -107,14 +110,23 @@ export class BasketComponent implements OnInit {
         summary: 'Giriş Gerekli',
         detail: 'Ödeme yapmak için giriş yapmanız gerekiyor.'
       });
+      this.router.navigate(['/auth/login']);
       return;
     }
 
-    // TODO: Ödeme sayfasına yönlendir
-    this.messageService.add({
-      severity: 'info',
-      summary: 'Yakında...',
-      detail: 'Ödeme özelliği yakında eklenecek!'
+    // Check if basket is not empty
+    this.basketSummary$.subscribe(summary => {
+      if (summary.totalItems === 0) {
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'Sepet Boş',
+          detail: 'Ödeme yapmak için sepetinizde ürün bulunmalıdır.'
+        });
+        return;
+      }
+
+      // Navigate to checkout
+      this.router.navigate(['/checkout']);
     });
   }
 

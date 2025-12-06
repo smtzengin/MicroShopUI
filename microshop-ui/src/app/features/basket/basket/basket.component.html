@@ -53,6 +53,7 @@
               label="Sepeti Boşalt"
               class="p-button-outlined p-button-danger p-button-sm"
               icon="pi pi-trash"
+              [loading]="(basketLoading$ | async) || false"
               (click)="clearBasket()">
             </button>
           </div>

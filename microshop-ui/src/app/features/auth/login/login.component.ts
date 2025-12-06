@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { MessageService } from 'primeng/api';
 
 // PrimeNG Modülleri (Sadece bu sayfada lazım olanlar)
@@ -34,7 +34,7 @@ import { AuthStateService } from '../../../shared/services/auth-state.service';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   loginForm: FormGroup;
   loading = false; // Butonda dönen yükleniyor simgesi için
 
@@ -43,12 +43,27 @@ export class LoginComponent {
     private authService: AuthService,
     private authStateService: AuthStateService,
     private router: Router,
+    private route: ActivatedRoute,
     private messageService: MessageService
   ) {
     // Form Validasyon Kuralları
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(4)]]
+    });
+  }
+
+  ngOnInit() {
+    // Query parametrelerinden mesaj kontrol et
+    this.route.queryParams.subscribe(params => {
+      if (params['message']) {
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'Oturum Süresi Doldu',
+          detail: params['message'],
+          life: 5000
+        });
+      }
     });
   }
 
@@ -78,8 +93,9 @@ export class LoginComponent {
           const refreshToken = responseData.refreshToken || responseData.refresh_token || '';
           const userId = responseData.id || responseData.userId || responseData.user_id;
           const userName = responseData.userName || responseData.name || responseData.fullName || responseData.username;
+          const userRoles = responseData.roles || [];
 
-          console.log('Extracted values:', { token, userId, userName });
+          console.log('Extracted values:', { token, userId, userName, userRoles });
 
           if (token) {
             // User ID yoksa JWT'den çıkarmaya çalış
@@ -98,16 +114,22 @@ export class LoginComponent {
             // AuthStateService'e token ve user bilgilerini set et
             this.authStateService.loginSuccess(
               token,
-              refreshToken,
               {
                 id: finalUserId || `user_${Date.now()}`, // Fallback ID
                 email: this.loginForm.value.email,
-                name: userName
+                name: userName,
+                roles: userRoles
               }
             );
 
             this.messageService.add({ severity: 'success', summary: 'Başarılı', detail: 'Giriş yapıldı!' });
-            this.router.navigate(['/shop']);
+
+            // Role göre yönlendirme
+            if (userRoles.includes('Seller')) {
+              this.router.navigate(['/seller']);
+            } else {
+              this.router.navigate(['/shop']);
+            }
           } else {
             console.log('Token bulunamadı, response data:', responseData);
             this.messageService.add({ severity: 'error', summary: 'Hata', detail: 'Token bilgisi alınamadı' });
